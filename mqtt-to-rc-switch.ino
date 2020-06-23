@@ -4,9 +4,9 @@
 #include <PubSubClient.h>
 
 
-unsigned long now = 0;
-unsigned long last_reconnect = 0;
-String client_id = "ESP8266Client-";
+const byte rc_pin{3};
+const byte led_pin{1};
+String client_id{MQTT_CLIENT_ID};
 
 
 WiFiClient esp_client;
@@ -18,9 +18,9 @@ void setupWifi() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
-     digitalWrite(1, LOW);
+     digitalWrite(led_pin, LOW);
      delay(250);
-     digitalWrite(1, HIGH);
+     digitalWrite(led_pin, HIGH);
      delay(250);
   }
 }
@@ -44,19 +44,19 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
 
 boolean reconnect() {
-    digitalWrite(1, LOW);
+    digitalWrite(led_pin, LOW);
     if (mqtt_client.connect(client_id.c_str())) {
-      mqtt_client.subscribe("rc-switch/#");
+      mqtt_client.subscribe(MQTT_TOPIC);
     }
-    digitalWrite(1, HIGH);
+    digitalWrite(led_pin, HIGH);
     return mqtt_client.connected();
   }
 
 
 void setup() {
-  pinMode(1, OUTPUT);
-  digitalWrite(1, HIGH);
-  rc_switch.enableTransmit(3);
+  pinMode(led_pin, OUTPUT);
+  digitalWrite(led_pin, HIGH);
+  rc_switch.enableTransmit(rc_pin);
   setupWifi();
   randomSeed(micros());
   client_id += String(random(0xffff), HEX);
@@ -65,10 +65,14 @@ void setup() {
 }
 
 
+unsigned long now = 0;
+unsigned long last_reconnect = 0;
+
+
 void loop() {
   if (!mqtt_client.connected()) {
     now = millis();
-    if (now - last_reconnect > 5000) {
+    if (now - last_reconnect > MQTT_RECONNECT) {
       last_reconnect = now;
       if (reconnect()) {
         last_reconnect = 0;
