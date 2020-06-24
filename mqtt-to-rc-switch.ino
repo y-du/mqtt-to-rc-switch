@@ -44,26 +44,29 @@ void setupWifi() {
 
 
 void callback(char* topic, byte* payload, unsigned int length) {
-  char* tok = strtok(topic, "/");
-  char* lvls[2];
+  char* lvls[3];
   int i = 0;
+  char* tok = strtok(topic, "/");
   while(tok) {
     tok = strtok(NULL, "/");
     lvls[i++] = tok;
   }
   if ((char)payload[0] == '1') {
-    rc_switch.switchOn(lvls[0], lvls[1]);
+    rc_switch.switchOn(lvls[1], lvls[2]);
   }
   if ((char)payload[0] == '0') {
-    rc_switch.switchOff(lvls[0], lvls[1]);
+    rc_switch.switchOff(lvls[1], lvls[2]);
   }
 }
+
+
+String topic{String() + MQTT_TOPIC + "/" + STATION_ID + "/+/+"};
 
 
 boolean reconnect() {
     digitalWrite(led_pin, LOW);
     if (mqtt_client.connect(client_id.c_str())) {
-      mqtt_client.subscribe(MQTT_TOPIC);
+      mqtt_client.subscribe(topic.c_str());
     }
     digitalWrite(led_pin, HIGH);
     return mqtt_client.connected();
