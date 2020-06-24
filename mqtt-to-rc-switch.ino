@@ -49,7 +49,9 @@ void callback(char* topic, byte* payload, unsigned int length) {
   char* tok = strtok(topic, "/");
   while(tok) {
     tok = strtok(NULL, "/");
-    lvls[i++] = tok;
+    if (i < 3) {
+      lvls[i++] = tok;
+    }
   }
   if ((char)payload[0] == '1') {
     rc_switch.switchOn(lvls[1], lvls[2]);
