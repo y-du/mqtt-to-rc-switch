@@ -5,5 +5,7 @@ config.h
 	#define MQTT_SERVER "IP Address of MQTT Server"
 	#define MQTT_PORT 1883
 	#define MQTT_RECONNECT 5000
-	#define MQTT_CLIENT_ID "RC-Switch-"
-	#define MQTT_TOPIC "rc-switch/#"
+	#define MQTT_CLIENT_ID "RC-Station-"
+	#define MQTT_TOPIC "rc-station"
+	#define STATION_ID "RC001"
+
