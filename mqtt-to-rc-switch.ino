@@ -103,4 +103,5 @@ void loop() {
   } else {
     mqtt_client.loop();
   }
+  delay(100);
 }
