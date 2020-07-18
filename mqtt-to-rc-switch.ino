@@ -23,7 +23,7 @@
 
 const byte rc_pin{3};
 const byte led_pin{1};
-String client_id{MQTT_CLIENT_ID};
+String client_id{STATION_ID};
 
 
 WiFiClient esp_client;
@@ -33,6 +33,7 @@ RCSwitch rc_switch = RCSwitch();
 
 void setupWifi() {
   WiFi.mode(WIFI_STA);
+  WiFi.hostname(client_id);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
      digitalWrite(led_pin, LOW);
@@ -81,14 +82,14 @@ void setup() {
   rc_switch.enableTransmit(rc_pin);
   setupWifi();
   randomSeed(micros());
-  client_id += String(random(0xffff), HEX);
+  client_id += "-" + String(random(0xffff), HEX);
   mqtt_client.setServer(MQTT_SERVER, MQTT_PORT);
   mqtt_client.setCallback(callback);
 }
 
 
-unsigned long now = 0;
-unsigned long last_reconnect = 0;
+unsigned long now{0};
+unsigned long last_reconnect{0};
 
 
 void loop() {
