@@ -41,6 +41,9 @@ void setupWifi() {
 }
 
 
+unsigned long last_msg{0};
+
+
 void callback(char* topic, byte* payload, unsigned int length) {
   char* lvls[3];
   int i = 0;
@@ -57,6 +60,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   if ((char)payload[0] == '0') {
     rc_switch.switchOff(lvls[1], lvls[2]);
   }
+  last_msg = millis();
 }
 
 
@@ -103,5 +107,12 @@ void loop() {
   } else {
     mqtt_client.loop();
   }
-  delay(100);
+  if (millis() - last_msg >= MSG_WINDOW) {
+    if (last_msg > 0) {
+      last_msg = 0;
+    }
+    delay(LOOP_DELAY);
+  } else {
+    delay(1);
+  }
 }
