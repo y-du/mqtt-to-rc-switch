@@ -8,5 +8,5 @@ config.h
 	#define MQTT_TOPIC "rc-station"
 	#define STATION_ID "YOUR STATION ID"
 	#define MSG_WINDOW 1000
-	#define LOOP_DELAY 250
+	#define LOOP_DELAY 100
 
